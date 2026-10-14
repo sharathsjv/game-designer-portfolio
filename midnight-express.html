@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Midnight Express</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<meta name="description" content="Design document for a social-stealth smuggling game seen through airport CCTV.">
+<meta name="description" content="Social-stealth smuggling game seen through airport CCTV: design document and Unity build.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;600&display=swap">
 <style>
 /* Layout: centered. A narrow reading column (~680px) for text, a wider band (~1080px) for media and card grids, both on the same center line. */
@@ -211,21 +211,24 @@ td.num,th.num{text-align:right}
 </div></header>
 <main>
 <section class="case-head"><div class="read">
-<p class="label"><a href="./#work">Work</a> / Design document</p>
+<p class="label"><a href="./#work">Work</a> / Personal project</p>
 <h1>Midnight Express</h1>
 <p class="lede">You're in a line, getting closer to the body check. You're carrying contraband. If you mess up, the next smuggler you control has a harder time getting through.</p>
 <dl class="spec">
 <div><dt class="label">Genre</dt><dd>Social deception</dd></div>
 <div><dt class="label">Platform</dt><dd>PC, keyboard or controller</dd></div>
 <div><dt class="label">Engine</dt><dd>Unity</dd></div>
-<div><dt class="label">Stage</dt><dd>Design document, 2025</dd></div>
+<div><dt class="label">Stage</dt><dd>Design document and Unity build, 2025</dd></div>
 </dl>
 </div></section>
+
+<div class="band"><figure><div class="frame"><img src="img/me-concourse.jpg" alt="Midnight Express in Unity: the airport concourse seen through a fisheye CCTV lens, with travellers walking toward the security check" loading="lazy"></div><figcaption>The departure hall in Unity, seen through the fisheye CCTV camera. Travellers head for the security check under the clock.</figcaption></figure></div>
 
 <section class="chapter"><div class="read"><span class="label">Structure</span><h2>Five smugglers, one airport</h2><div class="stack">
 <p>A five-person smuggling group plans to move valuable goods through one airport. You guide each smuggler past security in turn, from check-in to boarding. Every stage adds one more layer of security.</p>
 <p>Each run starts in a room. You explore to learn your ID and the restricted items for your destination, then hide the contraband through small minigames. Call a taxi from the room's phone and the airport begins.</p>
-<p>The whole game is seen through airport security cameras. Art is PS1-style: low-poly models, 256&times;256 textures at most, and vertex-painted shadows.</p></div></div><div class="band media-band"><figure><div class="frame diagram"><img src="img/me-hotel-sequence.png" alt="Flowchart from planning room to airport and back" loading="lazy"></div><figcaption>The loop from planning room to airport.</figcaption></figure></div></section>
+<p>The whole game is seen through airport security cameras. Art is PS1-style: low-poly models, 256&times;256 textures at most, and vertex-painted shadows.</p></div></div><div class="band media-band"><figure><div class="frame diagram"><img src="img/me-hotel-sequence.png" alt="Flowchart from planning room to airport and back" loading="lazy"></div><figcaption>The loop from planning room to airport.</figcaption></figure>
+<div class="pair" style="margin-top:20px"><figure><div class="frame"><img src="img/me-hall.jpg" alt="Midnight Express: wide CCTV view of the departure hall, queue barriers and the security check entrance" loading="lazy"></div><figcaption>A wide CCTV angle: the queue barriers ahead, the security check on the right.</figcaption></figure><figure><div class="frame"><img src="img/me-sign.jpg" alt="Midnight Express: low-poly security check sign, clock and departure boards" loading="lazy"></div><figcaption>PS1-style signage and departure boards, with low-resolution textures.</figcaption></figure></div></div></section>
 
 <section class="chapter"><div class="read"><span class="label">Relay</span><h2>Mistakes carry over</h2>
 <p>Whether a smuggler boards cleanly or gets caught, you move on to the next one. A clean run keeps the base alert level where it was. Getting caught raises it for the next smuggler.</p>

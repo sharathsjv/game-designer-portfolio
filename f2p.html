@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Juego Studios</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Level design, economy and spawn systems for free-to-play mobile games, plus balancing exercises.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: centered. A narrow reading column (~680px) for text, a wider band (~1080px) for media and card grids, both on the same center line. */
+:root{
+  --bg:#eceef0; --surface:#f8f9fa; --fg:#15181c; --muted:#58616a; --line:#cfd5db;
+  --mark:#f2c230; --onmark:#15181c; --tile:#1b1f25; --ontile:#eef0f2;
+  --display:"Archivo","Arial Narrow","Helvetica Neue",Arial,sans-serif;
+  --body:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --read:680px; --band:1080px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111418; --surface:#181c21; --fg:#e5e8eb; --muted:#9aa3ad; --line:#2b3138;
+  --mark:#f2c230; --onmark:#111418; --tile:#1d2228; --ontile:#eef0f2; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111418; --surface:#181c21; --fg:#e5e8eb; --muted:#9aa3ad; --line:#2b3138;
+  --mark:#f2c230; --onmark:#111418; --tile:#1d2228; --ontile:#eef0f2; color-scheme:dark}
+
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:1.08rem;line-height:1.65;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+img,video{max-width:100%;height:auto;display:block}
+a{color:inherit;text-decoration-color:var(--mark);text-decoration-thickness:2px;text-underline-offset:3px}
+a:hover{text-decoration-color:var(--fg)}
+a:focus-visible,button:focus-visible{outline:3px solid var(--mark);outline-offset:3px;border-radius:2px}
+::selection{background:var(--mark);color:var(--onmark)}
+
+.read{max-width:var(--read);margin-inline:auto}
+.band{max-width:var(--band);margin-inline:auto}
+
+/* header: centered name, nav underneath */
+.top{border-bottom:1px solid var(--line)}
+.top .band{display:flex;flex-direction:column;align-items:center;gap:8px;padding-block:18px 14px}
+.brand{font-family:var(--display);font-stretch:75%;font-weight:800;font-size:1.25rem;letter-spacing:.02em;text-transform:uppercase;text-decoration:none}
+.nav{display:flex;justify-content:center;gap:8px 22px;flex-wrap:wrap;font-family:var(--mono);font-size:.76rem;letter-spacing:.06em;text-transform:uppercase}
+.nav a{text-decoration:none;color:var(--muted);padding-block:2px}
+.nav a:hover,.nav a[aria-current="page"]{color:var(--fg);box-shadow:inset 0 -2px 0 var(--mark)}
+
+/* type */
+h1,h2,h3{font-family:var(--display);font-weight:800;line-height:1.04;text-wrap:balance;margin:0}
+h1{font-size:clamp(2.8rem,8vw,5.4rem);font-stretch:70%;text-transform:uppercase;letter-spacing:-.005em}
+h2{font-size:clamp(1.8rem,4vw,2.6rem);font-stretch:72%;text-transform:uppercase}
+h3{font-size:1.35rem;font-stretch:82%;font-weight:750}
+p{margin:0}
+.lede{font-size:clamp(1.15rem,2.2vw,1.3rem);line-height:1.55}
+.label{font-family:var(--mono);font-size:.74rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.mark{font-weight:600;text-decoration:underline;text-decoration-color:var(--mark);text-decoration-thickness:3px;text-underline-offset:5px;text-decoration-skip-ink:auto}
+.muted{color:var(--muted)}
+.stack{display:flex;flex-direction:column;gap:1.1em}
+ul.clean{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:.6em}
+ul.clean li{padding-left:1.2em;position:relative}
+ul.clean li::before{content:"";position:absolute;left:0;top:.75em;width:.55em;height:2px;background:var(--mark)}
+
+/* buttons */
+.cta{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+.btn{display:inline-flex;align-items:center;gap:.5em;font-family:var(--mono);font-size:.8rem;letter-spacing:.05em;text-transform:uppercase;
+  text-decoration:none;padding:.8em 1.2em;border:1.5px solid var(--fg);border-radius:3px;color:var(--fg);background:transparent}
+.btn.primary{background:var(--mark);border-color:var(--mark);color:var(--onmark);font-weight:600}
+.btn:hover{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+
+/* hero */
+.hero{text-align:center;padding-block:clamp(48px,8vw,96px) clamp(28px,4vw,44px)}
+.hero .read{display:flex;flex-direction:column;align-items:center;gap:1.3rem}
+.hero h1 .under{box-shadow:inset 0 -.12em 0 var(--mark)}
+.showreel{margin-top:clamp(28px,4vw,44px)}
+
+/* media */
+figure{margin:0}
+.frame{background:#000;border-radius:4px;overflow:hidden;border:1px solid var(--line)}
+.frame img,.frame video{width:100%}
+.frame.diagram{background:#fff}
+figcaption{font-family:var(--mono);font-size:.74rem;letter-spacing:.02em;color:var(--muted);margin-top:10px;line-height:1.5}
+.media-band{margin-block:2.4rem}
+.pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.trio{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+@media (max-width:760px){.pair,.trio{grid-template-columns:minmax(0,1fr)}}
+
+/* sections */
+.section{padding-block:clamp(56px,8vw,100px);border-top:1px solid var(--line)}
+.sec-title{text-align:center;display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:clamp(28px,4vw,44px)}
+
+/* project cards */
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:28px}
+.card{display:flex;flex-direction:column;gap:14px;text-decoration:none;min-width:0}
+.card .thumb{aspect-ratio:16/9;border-radius:4px;overflow:hidden;background:var(--tile);border:1px solid var(--line)}
+.card .thumb img,.card .thumb video{width:100%;height:100%;object-fit:cover}
+.card h3{font-size:clamp(1.5rem,2.6vw,1.9rem);text-transform:uppercase;font-stretch:72%}
+.card p{color:var(--muted);font-size:1rem}
+.card .go{font-family:var(--mono);font-size:.76rem;letter-spacing:.06em;text-transform:uppercase}
+a.card:hover h3{text-decoration:underline;text-decoration-color:var(--mark);text-decoration-thickness:3px}
+.card.wide{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:28px;align-items:center}
+.card.wide .txt{display:flex;flex-direction:column;gap:12px}
+.card.wide h3{font-size:clamp(2rem,4vw,3rem)}
+@media (max-width:760px){.cards{grid-template-columns:minmax(0,1fr)}.card.wide{grid-template-columns:minmax(0,1fr)}}
+.tiletext{height:100%;display:flex;flex-direction:column;justify-content:center;gap:4px;padding:24px 28px;background:var(--tile);color:var(--ontile)}
+.tiletext span{font-family:var(--display);font-stretch:70%;font-weight:800;text-transform:uppercase;font-size:clamp(1.3rem,2.6vw,1.9rem);line-height:1.05}
+.tiletext.small{padding:16px 18px}
+.tiletext.small span{font-size:clamp(1rem,1.7vw,1.25rem)}
+.tiletext span:nth-child(odd){color:var(--mark)}
+.minis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0;border-top:1.5px solid var(--fg);margin-top:44px}
+.minis>*{padding:20px 11px 22px 11px;display:flex;flex-direction:column;gap:8px;text-decoration:none;min-width:0}
+.minis>*+*{border-left:1px solid var(--line)}
+.minis h3{font-size:1.3rem;text-transform:uppercase;font-stretch:75%}
+.minis p{color:var(--muted);font-size:.98rem}
+a.mini:hover h3{text-decoration:underline;text-decoration-color:var(--mark)}
+@media (max-width:760px){.minis{grid-template-columns:minmax(0,1fr)}.minis>*+*{padding-left:0;border-left:0;border-top:1px solid var(--line)}}
+
+/* image helpers */
+.frame.phone{max-width:300px;margin-inline:auto;border-radius:14px;border:4px solid var(--tile)}
+.frame.phone.bare{border:0;border-radius:0;background:transparent}
+.frame.phone{max-width:min(300px,70vw)}
+.split{display:grid;grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:28px;align-items:center}
+@media (max-width:760px){.split{grid-template-columns:minmax(0,1fr)}}
+.thumb.quad{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:3px}
+.thumb.quad img{width:100%;height:100%;object-fit:cover}
+.mthumb{aspect-ratio:16/9;border-radius:4px;overflow:hidden;border:1px solid var(--line);background:var(--tile);margin-bottom:6px}
+.mthumb img,.mthumb video{width:100%;height:100%;object-fit:cover}
+.mthumb.logo{display:flex;align-items:center;justify-content:center;background:#fff}
+.mthumb.logo img{width:auto;height:70%;object-fit:contain;image-rendering:pixelated}
+
+/* spec strip */
+.spec{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-block:1px solid var(--line);margin:0;text-align:center}
+.spec div{padding:14px 10px;min-width:0}
+.spec div+div{border-left:1px solid var(--line)}
+.spec dd{margin:4px 0 0;font-family:var(--display);font-stretch:85%;font-weight:650;font-size:1rem;line-height:1.3}
+@media (max-width:760px){.spec{grid-template-columns:repeat(2,minmax(0,1fr))}.spec div:nth-child(3){border-left:0}.spec div:nth-child(n+3){border-top:1px solid var(--line)}}
+
+/* case study */
+.case-head{text-align:center;padding-block:clamp(44px,7vw,84px) clamp(24px,4vw,36px)}
+.case-head .read{display:flex;flex-direction:column;align-items:center;gap:1.2rem}
+.case-head .spec{width:100%;margin-top:.6rem}
+.chapter{padding-block:clamp(44px,6vw,72px);border-top:1px solid var(--line)}
+.chapter .read>.label{display:block;margin-bottom:10px}
+.chapter h2{margin-bottom:18px}
+.chapter h3{margin-top:.6em}
+.pull{font-family:var(--display);font-stretch:78%;font-weight:750;font-size:clamp(1.5rem,3.2vw,2.1rem);line-height:1.15;text-align:center;
+  max-width:24ch;margin:2.2rem auto;text-wrap:balance}
+.pull::before{content:"";display:block;width:56px;height:6px;background:var(--mark);margin:0 auto 18px}
+
+/* Kevin's day */
+.day{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;padding:0;margin:0}
+.day li{list-style:none;background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:16px;min-width:0}
+.day .n{font-family:var(--mono);font-size:.72rem;color:var(--onmark);background:var(--mark);display:inline-block;padding:1px 7px;margin-bottom:10px;border-radius:2px}
+.day b{display:block;font-family:var(--display);font-stretch:85%;font-size:1.05rem;line-height:1.2;margin-bottom:6px}
+.day span{font-size:.92rem;color:var(--muted);line-height:1.45;display:block}
+@media (max-width:900px){.day{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:520px){.day{grid-template-columns:minmax(0,1fr)}}
+
+/* systems */
+.sys{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.sys>div{background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:16px 18px;min-width:0}
+.sys h3{font-size:1.1rem;margin:0 0 6px}
+.sys p{font-size:.97rem;color:var(--muted)}
+@media (max-width:640px){.sys{grid-template-columns:minmax(0,1fr)}}
+
+/* tables */
+.tablewrap{overflow-x:auto;border-top:1.5px solid var(--fg)}
+table{border-collapse:collapse;width:100%;font-family:var(--mono);font-size:.82rem;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:9px 14px 9px 0;border-bottom:1px solid var(--line);white-space:nowrap}
+th{font-weight:600;color:var(--muted);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase}
+td.num,th.num{text-align:right}
+
+/* svg diagram */
+.svgwrap{overflow-x:auto;border:1px solid var(--line);border-radius:4px;background:var(--surface);padding:16px}
+.svgwrap svg{display:block;min-width:620px;width:100%;height:auto}
+.svgwrap text{font-family:var(--mono);fill:var(--fg)}
+.svgwrap .m{fill:var(--muted)}
+
+/* about */
+.about{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:48px;align-items:start}
+.facts{display:flex;flex-direction:column;gap:0;border-top:1.5px solid var(--fg)}
+.facts div{padding:12px 0;border-bottom:1px solid var(--line)}
+.facts dd{margin:4px 0 0;font-family:var(--display);font-stretch:85%;font-weight:650}
+@media (max-width:760px){.about{grid-template-columns:minmax(0,1fr)}}
+
+/* footer */
+.foot{border-top:1px solid var(--line);padding-block:56px 64px;text-align:center}
+.foot .read{display:flex;flex-direction:column;align-items:center;gap:16px}
+.copyrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center;font-family:var(--mono);font-size:.95rem}
+.copyrow button{font:inherit;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;background:none;border:1px solid var(--line);color:var(--muted);padding:.35em .75em;border-radius:3px;cursor:pointer}
+.copyrow button:hover{color:var(--fg);border-color:var(--fg)}
+.next{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-block:32px;border-top:1px solid var(--line)}
+.next a{font-family:var(--display);font-stretch:75%;font-weight:800;font-size:1.4rem;text-transform:uppercase;text-decoration:none}
+.next a:hover{text-decoration:underline;text-decoration-color:var(--mark)}
+.swipe{display:none;font-family:var(--mono);font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+/* phones: let media run edge to edge so wide gameplay footage stays readable */
+@media (max-width:600px){
+  body{font-size:1.04rem}
+  .showreel figure,.chapter figure,.band>figure{margin-inline:calc(-1 * max(16px, env(safe-area-inset-left, 0px)))}
+  .chapter figure .frame,.showreel .frame,.band>figure .frame{border-radius:0;border-inline:0}
+  .chapter figcaption,.showreel figcaption,.band>figure figcaption{padding-inline:16px}
+  .pair,.trio{gap:24px}
+  .btn{padding:.9em 1.2em}
+  .swipe{display:block}
+}
+</style>
+</head>
+<body>
+<header class="top"><div class="band">
+<a class="brand" href="./">Sharath Sajeev</a>
+<nav class="nav" aria-label="Main"><a href="./#work">Work</a><a href="everyday-objects.html">Everyday Objects</a><a href="f2p.html" aria-current="page">Juego Studios</a><a href="vr.html">AutoVRse</a><a href="midnight-express.html">Midnight Express</a><a href="./#about">About</a><a href="Sharath_Sajeev_Resume.pdf" target="_blank" rel="noopener">Resume</a></nav>
+</div></header>
+<main>
+<section class="case-head"><div class="read">
+<p class="label"><a href="./#work">Work</a> / Game designer &middot; 2022&ndash;23</p>
+<h1>Juego Studios</h1>
+<p class="lede">A year designing and balancing free-to-play mobile games: levels, lives and powerup economies, spawn systems and weapon costs. Plus two balancing exercises since.</p>
+<dl class="spec">
+<div><dt class="label">Role</dt><dd>Game designer</dd></div>
+<div><dt class="label">Studio</dt><dd>Juego Studios, Bangalore</dd></div>
+<div><dt class="label">Genres</dt><dd>Match-3, bubble shooter, runner, tower defence</dd></div>
+<div><dt class="label">Dates</dt><dd>Sep 2022 &ndash; Sep 2023</dd></div>
+</dl>
+</div></section>
+
+<section class="chapter"><div class="read"><span class="label">Music Blast</span><h2>Lives, powerups and the path to IAP</h2><div class="stack">
+<p>A music-themed classic match-3 game. I balanced and maintained the hearts system: how many lives a player gets before the game leads them to in-app purchases. I also set which powerups each level needs, and how many.</p>
+<p><a href="https://play.google.com/store/apps/details?id=com.player1games.musicblast" target="_blank" rel="noopener">Music Blast on Google Play</a></p></div></div><div class="band media-band"><figure><div class="frame phone"><img src="img/music-blast.jpg" alt="Music Blast: a match-3 board of music-themed tiles with goals and a three-move counter" loading="lazy"></div><figcaption>Music Blast. Goals and a move limit per level; running out of lives leads to the store.</figcaption></figure></div></section>
+
+<section class="chapter"><div class="read"><span class="label">Ultimate Cafe Franchise</span><h2>Match-3 and bubble shooter levels</h2><div class="stack">
+<p>A match-3 game themed around running your own coffee shop franchise. I designed the levels for both of its modes, match-3 and bubble shooter.</p>
+<p>On a live match-3 title with over 10,000 Google Play downloads, I planned and iterated on levels, tuning challenge, pacing and flow from playtest feedback.</p></div></div><div class="band media-band"><figure><div class="frame phone bare"><img src="img/ucf-drinks.jpg" alt="Ultimate Cafe Franchise: buying signature drinks with ingredients or premium currency" loading="lazy"></div><figcaption>Ultimate Cafe Franchise. Signature drinks cost regular ingredients or premium currency.</figcaption></figure></div></section>
+
+<section class="chapter"><div class="read"><span class="label">Falcon Dash</span><h2>A spawn system driven by distance</h2><div class="stack">
+<p>A three-lane endless runner. I owned the level design: the logic that places obstacles, powerups and coins.</p>
+<ul class="clean">
+<li>Distance drives everything. The run is split into a set number of phases, each covering a range of distance.</li>
+<li>Each phase defines which obstacles, powerups and coins can appear, and how often each one spawns.</li>
+<li>The system mixes hand-authored patterns with random spawns.</li>
+<li>After the last phase, the cycle starts again.</li>
+</ul></div></div><div class="band media-band"><div class="split"><figure><div class="frame phone"><img src="img/falcon-dash.jpg" alt="Falcon Dash: the runner on a city street with a barrier, coins and buses" loading="lazy"></div><figcaption>Falcon Dash. Barriers, coins and traffic all come from the phase tables.</figcaption></figure><div><span class="swipe">Swipe the diagram sideways &rarr;</span><div class="svgwrap"><svg viewBox="0 0 760 210" role="img" aria-label="Distance-based phases: each phase sets which obstacles, powerups and coins spawn and how often; after the last phase the cycle restarts">
+<line x1="30" y1="150" x2="700" y2="150" stroke="currentColor" stroke-width="2"/>
+<polygon points="700,144 714,150 700,156" fill="currentColor"/>
+<text x="716" y="174" font-size="12" class="m" text-anchor="end">distance</text>
+<g font-size="13">
+<rect x="30" y="40" width="190" height="96" fill="var(--mark)" fill-opacity=".22" stroke="var(--mark)" stroke-width="1.5"/>
+<rect x="230" y="40" width="190" height="96" fill="var(--mark)" fill-opacity=".38" stroke="var(--mark)" stroke-width="1.5"/>
+<rect x="430" y="40" width="190" height="96" fill="var(--mark)" fill-opacity=".55" stroke="var(--mark)" stroke-width="1.5"/>
+<text x="44" y="64" font-weight="600">Phase 1</text><text x="244" y="64" font-weight="600">Phase 2</text><text x="444" y="64" font-weight="600">Phase N</text>
+<text x="44" y="88" class="m" font-size="12">obstacle types</text><text x="44" y="106" class="m" font-size="12">powerups, coins</text><text x="44" y="124" class="m" font-size="12">spawn frequency</text>
+<text x="244" y="88" class="m" font-size="12">obstacle types</text><text x="244" y="106" class="m" font-size="12">powerups, coins</text><text x="244" y="124" class="m" font-size="12">spawn frequency</text>
+<text x="444" y="88" class="m" font-size="12">authored patterns</text><text x="444" y="106" class="m" font-size="12">+ random spawns</text><text x="444" y="124" class="m" font-size="12">spawn frequency</text>
+</g>
+<path d="M620 34 C 640 4, 40 4, 60 34" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="5 5"/>
+<polygon points="54,30 62,40 66,28" fill="currentColor"/>
+<text x="330" y="16" font-size="12" class="m" text-anchor="middle">after the last phase, the cycle starts again</text>
+<text x="125" y="172" font-size="11" class="m" text-anchor="middle">start</text><text x="525" y="172" font-size="11" class="m" text-anchor="middle">later distance range</text>
+</svg></div></div></div></div></section>
+
+<section class="chapter"><div class="read"><span class="label">Apocalyptics</span><h2>Tower defence weapon economy</h2>
+<p>An NFT-based product with two modes, tower defence and a card game. I balanced the tower defence game: how much each weapon costs and how much damage it deals, and where resources spawn and in what amounts.</p></div><div class="band media-band"><figure><div class="frame"><img src="img/apoc-map.jpg" alt="Apocalyptics: the world map with a scavenging route from the player base and resource counters" loading="lazy"></div><figcaption>Apocalyptics. Scavenging runs from the base; resource counters across the top.</figcaption></figure></div></section>
+
+<section class="chapter"><div class="read"><span class="label">Other projects</span><h2>Also at Juego</h2>
+<ul class="clean">
+<li><b>Financial literacy game</b> for a leading Indian financial services group: reward and progression systems that turn investment principles into in-game maths.</li>
+<li><b>Isometric battle arena</b>, prototyped from an early R&amp;D stage. I defined the core loop and iterated on camera and combat feel.</li>
+<li><b>Top-down dungeon shooter</b>: combat encounters, obstacles and progression.</li>
+</ul></div></section>
+
+<section class="chapter" id="balancing"><div class="read"><span class="label">Personal balancing exercise</span><h2>Economy teardown: Candy Crush</h2>
+<p>I broke down Candy Crush's economy to see how a fair free-to-play loop is built. Gold bars are the main currency, earned by finishing chapters or bought in the store. Hearts recharge on their own and gold bars are handed out regularly, so players never have to rely on purchases to keep playing.</p></div>
+<div class="band media-band"><div class="pair">
+<div class="tablewrap"><table><thead><tr><th>Store item</th><th class="num">Qty</th><th class="num">Price (&#8377;)</th></tr></thead><tbody>
+<tr><td>Weekly deal: gold bars</td><td class="num">10</td><td class="num">20</td></tr>
+<tr><td>Gold bars</td><td class="num">10</td><td class="num">35</td></tr>
+<tr><td>Gold bars</td><td class="num">50</td><td class="num">140</td></tr>
+<tr><td>Daily deal: gold, pink candy, 30 min hearts</td><td class="num">bundle</td><td class="num">70</td></tr>
+</tbody></table></div>
+<div class="tablewrap"><table><thead><tr><th>Pre-level offer</th><th class="num">Price</th></tr></thead><tbody>
+<tr><td>Color bomb &times;3</td><td class="num">9 gold</td></tr>
+<tr><td>Color bomb &times;20</td><td class="num">49 gold</td></tr>
+<tr><td>Infinite hearts, 6 hours</td><td class="num">69 gold</td></tr>
+<tr><td>Infinite hearts, 10 minutes</td><td class="num">&#8377;20</td></tr>
+</tbody></table></div>
+</div></div></section>
+
+<section class="chapter"><div class="read"><span class="label">Personal balancing exercise</span><h2>Weapon stat sheet</h2>
+<p>For a combat design test, I set stats for ten weapons across five classes, each in a common and a rare version: handling, movement speed, fire rate, reload, aim assist, recoil, damage falloff, body-part multipliers and dispersion. Common versions shown.</p></div>
+<div class="band media-band"><span class="swipe">Swipe the table sideways &rarr;</span><div class="tablewrap"><table><thead><tr><th>Class</th><th>Weapon</th><th class="num">Fire interval</th><th class="num">Magazine</th><th class="num">Reload</th><th class="num">Damage</th><th class="num">Min damage</th><th class="num">Falloff starts</th></tr></thead><tbody><tr><td>Handgun</td><td>PPQ</td><td class='num'>0.2s</td><td class='num'>12</td><td class='num'>1s</td><td class='num'>5</td><td class='num'>1</td><td class='num'>10 m</td></tr><tr><td>Handgun</td><td>Beretta</td><td class='num'>0.3s</td><td class='num'>9</td><td class='num'>1s</td><td class='num'>24</td><td class='num'>3</td><td class='num'>20 m</td></tr><tr><td>Shotgun</td><td>Mossberg</td><td class='num'>0.5s</td><td class='num'>6</td><td class='num'>2s</td><td class='num'>29</td><td class='num'>5</td><td class='num'>5 m</td></tr><tr><td>Shotgun</td><td>R90</td><td class='num'>0.3s</td><td class='num'>8</td><td class='num'>2.5s</td><td class='num'>30</td><td class='num'>7</td><td class='num'>10 m</td></tr><tr><td>SMG</td><td>MP5</td><td class='num'>0.04s</td><td class='num'>30</td><td class='num'>1.5s</td><td class='num'>3</td><td class='num'>2</td><td class='num'>10 m</td></tr><tr><td>SMG</td><td>UZI</td><td class='num'>0.02s</td><td class='num'>40</td><td class='num'>1.5s</td><td class='num'>5</td><td class='num'>2</td><td class='num'>10 m</td></tr><tr><td>Assault rifle</td><td>G95</td><td class='num'>0.07s</td><td class='num'>30</td><td class='num'>2s</td><td class='num'>9</td><td class='num'>7</td><td class='num'>30 m</td></tr><tr><td>Assault rifle</td><td>Ruger</td><td class='num'>0.09s</td><td class='num'>25</td><td class='num'>2s</td><td class='num'>8</td><td class='num'>7</td><td class='num'>60 m</td></tr><tr><td>Sniper</td><td>Springfield</td><td class='num'>0.5s</td><td class='num'>6</td><td class='num'>3s</td><td class='num'>25</td><td class='num'>20</td><td class='num'>100 m</td></tr><tr><td>Sniper</td><td>Ballista</td><td class='num'>0.8s</td><td class='num'>5</td><td class='num'>4s</td><td class='num'>35</td><td class='num'>30</td><td class='num'>100 m</td></tr></tbody></table></div></div>
+<div class="read"><p class="muted">Each class trades along a clear axis. SMGs fire fastest but hit lightest; snipers hold full damage to 100 m but reload slowest. Within a class, the second weapon trades one strength for another: the UZI fires twice as fast as the MP5 with more recoil, and the Ruger keeps full damage twice as far as the G95 at a slower rate of fire.</p></div>
+</section>
+
+<div class="band"><nav class="next" aria-label="More work"><a href="everyday-objects.html">&larr; Everyday Objects</a><a href="vr.html">AutoVRse &rarr;</a></nav></div>
+</main>
+<footer class="foot"><div class="read">
+<p class="label">Open to game design roles</p><h2>Let's talk</h2>
+<div class="copyrow"><span>sharathsjv@gmail.com</span><button type="button" data-copy="sharathsjv@gmail.com">Copy</button></div>
+<div class="nav"><a href="Sharath_Sajeev_Resume.pdf" target="_blank" rel="noopener">Resume (PDF)</a><a href="https://www.linkedin.com/in/sharathsjv" target="_blank" rel="noopener">LinkedIn</a><a href="https://sherpai.itch.io" target="_blank" rel="noopener">itch.io</a><a href="https://github.com/sharathsjv" target="_blank" rel="noopener">GitHub</a></div>
+</div></footer><script>
+document.querySelectorAll('[data-copy]').forEach(function(b){b.addEventListener('click',function(){
+  var t=b.getAttribute('data-copy');var done=function(){b.textContent='Copied';setTimeout(function(){b.textContent='Copy'},1600)};
+  try{navigator.clipboard.writeText(t).then(done,function(){sel(b)})}catch(e){sel(b)}
+});});
+function sel(b){var s=b.previousElementSibling;if(!s)return;var r=document.createRange();r.selectNodeContents(s);var g=getSelection();g.removeAllRanges();g.addRange(r);}
+</script>
+</body>
+</html>

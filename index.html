@@ -97,10 +97,18 @@ figcaption{font-family:var(--mono);font-size:.74rem;letter-spacing:.02em;color:v
 .card p{color:var(--muted);font-size:1rem}
 .card .go{font-family:var(--mono);font-size:.76rem;letter-spacing:.06em;text-transform:uppercase}
 a.card:hover h3{text-decoration:underline;text-decoration-color:var(--mark);text-decoration-thickness:3px}
-.card.wide{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:28px;align-items:center}
+.card.wide{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);column-gap:28px;row-gap:12px;align-content:center}
+.card.wide>.thumb{grid-column:1;grid-row:1/span 6;align-self:center}
+.card.wide>:not(.thumb){grid-column:2}
+.card.wide>h3{align-self:end}
 .card.wide .txt{display:flex;flex-direction:column;gap:12px}
 .card.wide h3{font-size:clamp(2rem,4vw,3rem)}
-@media (max-width:760px){.cards{grid-template-columns:minmax(0,1fr)}.card.wide{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:760px){.cards{grid-template-columns:minmax(0,1fr)}
+  .card.wide{display:flex}
+  .card>h3,.mini>h3{order:-2}
+  .card>.label,.mini>.label{order:-1;margin-top:-6px}
+  .card>.thumb,.mini>.mthumb{order:0;margin-block:4px}
+  .card>p:not(.label),.mini>p:not(.label),.card>.go,.card>.cta{order:1}}
 .tiletext{height:100%;display:flex;flex-direction:column;justify-content:center;gap:4px;padding:24px 28px;background:var(--tile);color:var(--ontile)}
 .tiletext span{font-family:var(--display);font-stretch:70%;font-weight:800;text-transform:uppercase;font-size:clamp(1.3rem,2.6vw,1.9rem);line-height:1.05}
 .tiletext.small{padding:16px 18px}
@@ -126,6 +134,31 @@ a.mini:hover h3{text-decoration:underline;text-decoration-color:var(--mark)}
 .mthumb img,.mthumb video{width:100%;height:100%;object-fit:cover}
 .mthumb.logo{display:flex;align-items:center;justify-content:center;background:#fff}
 .mthumb.logo img{width:auto;height:70%;object-fit:contain;image-rendering:pixelated}
+
+p.label.sub{text-align:center;margin:48px 0 0}
+.minis+p.label.sub{margin-top:48px}
+
+.card.feature h3{font-size:clamp(1.6rem,3vw,2.2rem)}
+.card.feature>.cta{margin-top:4px}
+
+/* card text hierarchy: title first, small meta line under it */
+.card>.label,.mini>.label{font-size:.66rem;letter-spacing:.07em;margin-top:-4px}
+.mini h3{font-size:1.35rem}
+/* professional cards use the same divider style as the project rows */
+.cards{border-top:1.5px solid var(--fg);column-gap:0;padding-top:0}
+.cards>.card{padding:20px 22px 24px}
+.cards>.card:first-child{padding-left:0}
+.cards>.card:last-child{padding-right:0}
+.cards>.card+.card{border-left:1px solid var(--line)}
+@media (max-width:760px){
+  .cards>.card{padding:20px 0 24px}
+  .cards>.card+.card{border-left:0;border-top:1px solid var(--line)}
+  .card.feature{text-align:center}
+  .card.feature>*{align-self:stretch!important}
+  .card.feature>h3{text-wrap:balance}
+  .card.feature>.cta{justify-content:center!important}
+  .minis>*{padding-left:0!important;padding-right:0!important}
+}
 
 /* spec strip */
 .spec{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-block:1px solid var(--line);margin:0;text-align:center}
@@ -207,7 +240,7 @@ td.num,th.num{text-align:right}
 <body>
 <header class="top"><div class="band">
 <a class="brand" href="./">Sharath Sajeev</a>
-<nav class="nav" aria-label="Main"><a href="./#work" aria-current="page">Work</a><a href="everyday-objects.html">Everyday Objects</a><a href="f2p.html">Juego Studios</a><a href="vr.html">AutoVRse</a><a href="midnight-express.html">Midnight Express</a><a href="./#about">About</a><a href="Sharath_Sajeev_Resume.pdf" target="_blank" rel="noopener">Resume</a></nav>
+<nav class="nav" aria-label="Main"><a href="./#latest" aria-current="page">Work</a><a href="everyday-objects.html">Everyday Objects</a><a href="f2p.html">Juego Studios</a><a href="vr.html">AutoVRse</a><a href="midnight-express.html">Midnight Express</a><a href="./#about">About</a><a href="Sharath_Sajeev_Resume.pdf" target="_blank" rel="noopener">Resume</a></nav>
 </div></header>
 <main>
 <section class="hero">
@@ -215,45 +248,56 @@ td.num,th.num{text-align:right}
 <p class="label">Game designer &middot; Levels, economy, systems</p>
 <h1>Sharath <span class="under">Sajeev</span></h1>
 <p class="lede">I design levels, economies and game systems, and I prototype them in Unity until they play well. Close to three years across shipped free-to-play mobile games at Juego Studios and VR training at AutoVRse.</p>
-<div class="cta"><a class="btn primary" href="https://sharathsjv.github.io/EverydayObjects/" target="_blank" rel="noopener">Play Everyday Objects</a><a class="btn" href="#work">See the work</a><a class="btn" href="Sharath_Sajeev_Resume.pdf" target="_blank" rel="noopener">Resume</a></div>
+<div class="cta"><a class="btn primary" href="#latest">See the work</a><a class="btn" href="Sharath_Sajeev_Resume.pdf" target="_blank" rel="noopener">Resume</a></div>
 </div>
-<div class="band showreel"><figure><div class="frame"><video autoplay muted loop playsinline preload="metadata" poster="img/eo-following.jpg" aria-label="Gameplay: following Kevin Malone through the business district"><source src="vid/eo-following.mp4" type="video/mp4"></video></div><figcaption>Everyday Objects: tailing the target through the business district.</figcaption></figure></div>
 </section>
 
+<section class="section featured-sec" id="latest"><div class="band">
+<div class="sec-title"><p class="label">Latest work</p><h2>Everyday Objects</h2></div>
+<div class="card wide feature">
+<div class="thumb"><video autoplay muted loop playsinline preload="metadata" poster="img/eo-following.jpg" aria-label="Everyday Objects gameplay: following Kevin Malone through the business district"><source src="vid/eo-following.mp4" type="video/mp4"></video></div>
+<h3>A hitman with no weapons</h3>
+<p class="label">My latest project &middot; 2026 &middot; Mobile &middot; Unity &middot; Playable</p>
+<p>Learn a target's routine, then turn an ordinary day into an accident. The case study follows the design from a dropped first concept, through two rounds of playtest changes, to a build you can play in your browser.</p>
+<div class="cta" style="justify-content:flex-start"><a class="btn primary" href="everyday-objects.html">Read the case study</a><a class="btn" href="https://sharathsjv.github.io/EverydayObjects/" target="_blank" rel="noopener">Play it</a></div>
+</div>
+</div></section>
+
 <section class="section" id="work"><div class="band">
-<div class="sec-title"><p class="label">Studios and projects</p><h2>Work</h2></div>
+<div class="sec-title"><p class="label">Studios</p><h2>Professional work</h2></div>
 <div class="cards">
 
-<a class="card wide" href="everyday-objects.html">
-<div class="thumb"><img src="img/eo-poison.jpg" alt="Everyday Objects: the bar menu offering to serve Kevin his lunch with rat poison" loading="lazy"></div>
-<div class="txt"><p class="label">2026 &middot; Mobile &middot; Unity &middot; Playable</p><h3>Everyday Objects</h3>
-<p>A hitman with no weapons. Learn a target's routine, then turn an ordinary day into an accident. Follows the design from a dropped first concept to a build you can play in a browser.</p>
-<span class="go">Read the case study &rarr;</span></div></a>
+
 
 <a class="card" href="f2p.html">
 <div class="thumb quad"><img src="img/music-blast.jpg" alt="Music Blast" loading="lazy"><img src="img/falcon-dash.jpg" alt="Falcon Dash" loading="lazy"><img src="img/ucf-drinks.jpg" alt="Ultimate Cafe Franchise" loading="lazy"><img src="img/apoc-map.jpg" alt="Apocalyptics" loading="lazy"></div>
-<p class="label">Game designer &middot; 2022&ndash;23 &middot; Bangalore</p><h3>Juego Studios</h3>
+<h3>Juego Studios</h3><p class="label">Game designer &middot; 2022&ndash;23 &middot; Bangalore</p>
 <p>Four shipped free-to-play mobile games. Match-3 and bubble shooter levels, a lives system tied to purchases, runner spawn logic and tower defence weapon costs.</p>
 <span class="go">Read the case study &rarr;</span></a>
 
 <a class="card" href="vr.html">
 <div class="thumb"><video autoplay muted loop playsinline preload="metadata" poster="img/vr-sorting.jpg" aria-label="VR training gameplay: sorting procedure step cards"><source src="vid/vr-sorting.mp4" type="video/mp4"></video></div>
-<p class="label">VR level designer &middot; 2024&ndash;26 &middot; Bangalore</p><h3>AutoVRse</h3>
+<h3>AutoVRse</h3><p class="label">VR level designer &middot; 2024&ndash;26 &middot; Bangalore</p>
 <p>VR training simulations for healthcare, manufacturing and logistics. Reusable grab, touch and UI interactions, assessments that teach, and modules built in two days.</p>
 <span class="go">Read the case study &rarr;</span></a>
 
 </div>
 
+</div></section>
+
+<section class="section" id="projects"><div class="band">
+<div class="sec-title"><p class="label">Prototypes and design documents</p><h2>More personal projects</h2></div>
 <div class="minis">
-<a class="mini" href="midnight-express.html"><div class="mthumb"><img src="img/me-concourse.jpg" alt="Midnight Express: CCTV view of an airport departure hall" loading="lazy"></div><p class="label">2025 &middot; PC &middot; Unity &rarr;</p><h3>Midnight Express</h3><p>Guide five smugglers through airport security, seen through CCTV. Each mistake raises the alert level for the next smuggler.</p></a>
-<div class="mini"><div class="mthumb"><div class="tiletext small"><span>Teach the rules.</span><span>Then punish the player</span><span>for following them.</span></div></div><p class="label">2025 &middot; In progress</p><h3>Hotel Lucia</h3><p>A 2D horror shooter built on one idea: teach the player the rules, then punish them for following them. A door you're told to leave alone eventually opens, and locks behind you.</p></div>
-<a class="mini" href="https://sherpai.itch.io/bibi-singleplayer" target="_blank" rel="noopener"><div class="mthumb"><video autoplay muted loop playsinline preload="metadata" poster="img/bibi-play.jpg" aria-label="Get to Bibi gameplay: running down a city street in time with the music"><source src="vid/bibi-play.mp4" type="video/mp4"></video></div><p class="label">2025 &middot; Play on itch.io &rarr;</p><h3>Get to Bibi</h3><p>Rhythm platformer prototype. Moves and jumps lock to the beat, and animations play at BPM &divide; 60 to stay in time.</p></a>
+<a class="mini" href="midnight-express.html"><div class="mthumb"><img src="img/me-concourse.jpg" alt="Midnight Express: CCTV view of an airport departure hall" loading="lazy"></div><h3>Midnight Express</h3><p class="label">2025 &middot; PC &middot; Unity &rarr;</p><p>Guide five smugglers through airport security, seen through CCTV. Each mistake raises the alert level for the next smuggler.</p></a>
+<div class="mini"><div class="mthumb"><div class="tiletext small"><span>Teach the rules.</span><span>Then punish the player</span><span>for following them.</span></div></div><h3>Hotel Lucia</h3><p class="label">2025 &middot; In progress</p><p>A 2D horror shooter built on one idea: teach the player the rules, then punish them for following them. A door you're told to leave alone eventually opens, and locks behind you.</p></div>
+<a class="mini" href="https://sherpai.itch.io/bibi-singleplayer" target="_blank" rel="noopener"><div class="mthumb"><video autoplay muted loop playsinline preload="metadata" poster="img/bibi-play.jpg" aria-label="Get to Bibi gameplay: running down a city street in time with the music"><source src="vid/bibi-play.mp4" type="video/mp4"></video></div><h3>Get to Bibi</h3><p class="label">2025 &middot; Play on itch.io &rarr;</p><p>Rhythm platformer prototype. Moves and jumps lock to the beat, and animations play at BPM &divide; 60 to stay in time.</p></a>
 
 </div>
-<div class="minis" style="margin-top:28px">
-<a class="mini" href="https://sherpai.itch.io/ducknpunch" target="_blank" rel="noopener"><div class="mthumb"><video autoplay muted loop playsinline preload="metadata" poster="img/dnp-play.jpg" aria-label="Duck n Punch gameplay: two fighters in a pixel-art bar"><source src="vid/dnp-play.mp4" type="video/mp4"></video></div><p class="label">2022 &middot; Play on itch.io &rarr;</p><h3>Duck 'n' Punch</h3><p>Couch fighting game for two players. Punch, or duck under the other player's punch.</p></a>
-<div class="mini"><div class="mthumb"><video autoplay muted loop playsinline preload="metadata" poster="img/cockrow-play.jpg" aria-label="Cockrow Commution gameplay: running down the pavement collecting coins"><source src="vid/cockrow-play.mp4" type="video/mp4"></video></div><p class="label">College &middot; Group project</p><h3>Cockrow Commution</h3><p>An endless runner about being late for work. Jump obstacles and whistle to clear people off the pavement. I also made the music.</p></div>
-<div class="mini"><div class="mthumb"><video autoplay muted loop playsinline preload="metadata" poster="img/projecttk-play.jpg" aria-label="Project TK gameplay: the player moving between pixel-art rooms of a house"><source src="vid/projecttk-play.mp4" type="video/mp4"></video></div><p class="label">2020 &middot; Personal project</p><h3>Project TK</h3><p>A 2D pixel-art game about one character's day, moving room to room through the house. Each room is lit by window light, and the score is tallied into a short story at the end.</p></div>
+<p class="label sub">Earlier projects</p>
+<div class="minis">
+<a class="mini" href="https://sherpai.itch.io/ducknpunch" target="_blank" rel="noopener"><div class="mthumb"><video autoplay muted loop playsinline preload="metadata" poster="img/dnp-play.jpg" aria-label="Duck n Punch gameplay: two fighters in a pixel-art bar"><source src="vid/dnp-play.mp4" type="video/mp4"></video></div><h3>Duck 'n' Punch</h3><p class="label">2022 &middot; Play on itch.io &rarr;</p><p>Couch fighting game for two players. Punch, or duck under the other player's punch.</p></a>
+<div class="mini"><div class="mthumb"><video autoplay muted loop playsinline preload="metadata" poster="img/cockrow-play.jpg" aria-label="Cockrow Commution gameplay: running down the pavement collecting coins"><source src="vid/cockrow-play.mp4" type="video/mp4"></video></div><h3>Cockrow Commution</h3><p class="label">College &middot; Group project</p><p>An endless runner about being late for work. Jump obstacles and whistle to clear people off the pavement. I also made the music.</p></div>
+<div class="mini"><div class="mthumb"><video autoplay muted loop playsinline preload="metadata" poster="img/projecttk-play.jpg" aria-label="Project TK gameplay: the player moving between pixel-art rooms of a house"><source src="vid/projecttk-play.mp4" type="video/mp4"></video></div><h3>Project TK</h3><p class="label">2020 &middot; Personal project</p><p>A 2D pixel-art game about one character's day, moving room to room through the house. Each room is lit by window light, and the score is tallied into a short story at the end.</p></div>
 </div>
 </div></section>
 

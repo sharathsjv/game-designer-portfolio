@@ -97,10 +97,18 @@ figcaption{font-family:var(--mono);font-size:.74rem;letter-spacing:.02em;color:v
 .card p{color:var(--muted);font-size:1rem}
 .card .go{font-family:var(--mono);font-size:.76rem;letter-spacing:.06em;text-transform:uppercase}
 a.card:hover h3{text-decoration:underline;text-decoration-color:var(--mark);text-decoration-thickness:3px}
-.card.wide{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:28px;align-items:center}
+.card.wide{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);column-gap:28px;row-gap:12px;align-content:center}
+.card.wide>.thumb{grid-column:1;grid-row:1/span 6;align-self:center}
+.card.wide>:not(.thumb){grid-column:2}
+.card.wide>h3{align-self:end}
 .card.wide .txt{display:flex;flex-direction:column;gap:12px}
 .card.wide h3{font-size:clamp(2rem,4vw,3rem)}
-@media (max-width:760px){.cards{grid-template-columns:minmax(0,1fr)}.card.wide{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:760px){.cards{grid-template-columns:minmax(0,1fr)}
+  .card.wide{display:flex}
+  .card>h3,.mini>h3{order:-2}
+  .card>.label,.mini>.label{order:-1;margin-top:-6px}
+  .card>.thumb,.mini>.mthumb{order:0;margin-block:4px}
+  .card>p:not(.label),.mini>p:not(.label),.card>.go,.card>.cta{order:1}}
 .tiletext{height:100%;display:flex;flex-direction:column;justify-content:center;gap:4px;padding:24px 28px;background:var(--tile);color:var(--ontile)}
 .tiletext span{font-family:var(--display);font-stretch:70%;font-weight:800;text-transform:uppercase;font-size:clamp(1.3rem,2.6vw,1.9rem);line-height:1.05}
 .tiletext.small{padding:16px 18px}
@@ -126,6 +134,31 @@ a.mini:hover h3{text-decoration:underline;text-decoration-color:var(--mark)}
 .mthumb img,.mthumb video{width:100%;height:100%;object-fit:cover}
 .mthumb.logo{display:flex;align-items:center;justify-content:center;background:#fff}
 .mthumb.logo img{width:auto;height:70%;object-fit:contain;image-rendering:pixelated}
+
+p.label.sub{text-align:center;margin:48px 0 0}
+.minis+p.label.sub{margin-top:48px}
+
+.card.feature h3{font-size:clamp(1.6rem,3vw,2.2rem)}
+.card.feature>.cta{margin-top:4px}
+
+/* card text hierarchy: title first, small meta line under it */
+.card>.label,.mini>.label{font-size:.66rem;letter-spacing:.07em;margin-top:-4px}
+.mini h3{font-size:1.35rem}
+/* professional cards use the same divider style as the project rows */
+.cards{border-top:1.5px solid var(--fg);column-gap:0;padding-top:0}
+.cards>.card{padding:20px 22px 24px}
+.cards>.card:first-child{padding-left:0}
+.cards>.card:last-child{padding-right:0}
+.cards>.card+.card{border-left:1px solid var(--line)}
+@media (max-width:760px){
+  .cards>.card{padding:20px 0 24px}
+  .cards>.card+.card{border-left:0;border-top:1px solid var(--line)}
+  .card.feature{text-align:center}
+  .card.feature>*{align-self:stretch!important}
+  .card.feature>h3{text-wrap:balance}
+  .card.feature>.cta{justify-content:center!important}
+  .minis>*{padding-left:0!important;padding-right:0!important}
+}
 
 /* spec strip */
 .spec{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-block:1px solid var(--line);margin:0;text-align:center}
@@ -207,7 +240,7 @@ td.num,th.num{text-align:right}
 <body>
 <header class="top"><div class="band">
 <a class="brand" href="./">Sharath Sajeev</a>
-<nav class="nav" aria-label="Main"><a href="./#work">Work</a><a href="everyday-objects.html">Everyday Objects</a><a href="f2p.html">Juego Studios</a><a href="vr.html" aria-current="page">AutoVRse</a><a href="midnight-express.html">Midnight Express</a><a href="./#about">About</a><a href="Sharath_Sajeev_Resume.pdf" target="_blank" rel="noopener">Resume</a></nav>
+<nav class="nav" aria-label="Main"><a href="./#latest">Work</a><a href="everyday-objects.html">Everyday Objects</a><a href="f2p.html">Juego Studios</a><a href="vr.html" aria-current="page">AutoVRse</a><a href="midnight-express.html">Midnight Express</a><a href="./#about">About</a><a href="Sharath_Sajeev_Resume.pdf" target="_blank" rel="noopener">Resume</a></nav>
 </div></header>
 <main>
 <section class="case-head"><div class="read">
